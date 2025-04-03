@@ -1,0 +1,48 @@
+// Define parameters.
+wGantryGirder = 200
+hGantry = 100
+dGantryGirder = 12
+dGantry = 20
+tGantryLeg = 10
+rInternalGantry = 10
+
+wBracket = 15
+tWallBracket = 5
+
+m12TapDrill = 10.2
+dMountHole = 4.2
+
+sketchGantry = startSketchOn(XZ)
+profileGantry = startProfileAt([-1 * wGantryGirder / 2, hGantry], sketchGantry)
+  |> yLine(%, length = -1 * (hGantry - tWallBracket))
+  |> xLine(%, length = -1 * wBracket, tag = $seg02)
+  |> yLine(%, length = -1 * tWallBracket)
+  |> xLine(%, length = wBracket + tGantryLeg)
+  |> yLine(%, length = hGantry - dGantryGirder - rInternalGantry)
+  |> tangentialArcToRelative([rInternalGantry, rInternalGantry], %)
+  |> xLine(%, length = wGantryGirder / 2 - tGantryLeg - rInternalGantry)
+  |> xLine(%, length = wGantryGirder / 2 - tGantryLeg - rInternalGantry)
+  |> tangentialArcToRelative([rInternalGantry, -rInternalGantry], %)
+  |> yLine(%, length = -1 * (hGantry - dGantryGirder - rInternalGantry))
+  |> xLine(%, length = wBracket + tGantryLeg)
+  |> yLine(%, length = tWallBracket)
+  |> xLine(%, length = -1 * wBracket, tag = $seg03)
+  |> yLine(%, length = hGantry - tWallBracket)
+  |> close(%, tag = $seg01)
+
+gantry = extrude(profileGantry, length = dGantry)
+
+sketch001 = startSketchOn(gantry, seg03)
+mountHoleC = circle(sketch001, center = [-107.5, 15], radius = dMountHole / 2)
+  |> extrude(%, length = -tWallBracket)
+mountHoleD = circle(sketch001, center = [-107.5, 5], radius = dMountHole / 2)
+  |> extrude(%, length = -tWallBracket)
+
+sketch002 = startSketchOn(gantry, seg02)
+mountHoleA = circle(sketch002, center = [107.5, 15], radius = dMountHole / 2)
+  |> extrude(%, length = -tWallBracket)
+mountHoleB = circle(sketch002, center = [107.5, 5], radius = dMountHole / 2)
+  |> extrude(%, length = -tWallBracket)
+m12Hole = startSketchOn(gantry, seg01)
+  |> circle(%, center = [0, dGantry / 2], radius = m12TapDrill / 2)
+  |> extrude(%, length = -dGantryGirder)

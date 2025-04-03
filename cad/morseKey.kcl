@@ -1,0 +1,165 @@
+// Main dimensional parameters.
+lCantilever = 80 // Length of main cantilever.
+tSection = 4 // Thickness of upper arm.
+wKey = 12 // Width of the part.
+
+
+lHingeBoss = 20 // Length of hinge boss.
+tGap = 15 // Gap between arms.
+tLowerSection = 8 // Lower arm.
+
+
+// Fillet rads.
+rBendExt = 1 // External bend radius.
+rBendInt = 4 // Internal corners; hinge.
+
+
+// Knob parameters.
+xKnobOffset = 5 // How far from the end of the arm the knob center will be.
+rPadBoss = 3 // Radius of raised boss.
+rPad = 6 // Radius of main pad.
+
+
+// Hole positions.
+dContactUpper = 4
+dContactLower = 4
+dTapDrillM4 = 3.3
+dClearanceM4 = 4.5
+xContactCenter = 18
+
+// Derived lengths
+lCantileverTotal = lCantilever + xKnobOffset
+lKey = lCantileverTotal + lHingeBoss // Total length.
+
+
+// Create main profile of the part.
+keyBody = startSketchOn(XZ)
+  // Start at top of first vertical section
+  |> startProfileAt([0, tLowerSection - rBendExt], %)
+
+  // Down first vertical face
+  |> yLine(%, length = -tLowerSection + rBendExt * 2)
+  |> tangentialArcTo([rBendExt, 0], %)
+
+  // Along bottom horizontal
+  |> xLine(%, length = lKey - (rBendExt * 2), tag = $seg02)
+  |> tangentialArcToRelative([rBendExt, rBendExt], %)
+
+  // Up vertical face
+  |> yLine(%, length = tLowerSection + tSection + tGap - (rBendExt * 2))
+
+  // Around top bend
+  |> tangentialArcToRelative([-rBendExt, rBendExt], %)
+
+  // Back along top horizontal - tagged for pad placement
+  |> xLine(%, length = -lKey + rBendExt * 2, tag = $seg01)
+  |> tangentialArcToRelative([-rBendExt, -rBendExt], %)
+
+  // Down vertical face
+  |> yLine(%, length = -tSection + rBendExt * 2)
+  |> tangentialArcToRelative([rBendExt, -rBendExt], %)
+
+  // Forward to start of pocket
+  |> xLine(%, length = lCantileverTotal - (rBendExt * 2) - rBendInt)
+
+  // Around pocket corner
+  |> tangentialArcToRelative([rBendInt, -rBendInt], %)
+
+  // Up pocket side
+  |> yLine(%, length = -tGap + 2 * rBendInt)
+
+  // Around other pocket corner
+  |> tangentialArcToRelative([-rBendInt, -rBendInt], %)
+
+  // Complete pocket
+  |> xLine(%, length = -lCantileverTotal + rBendExt * 2 + rBendInt)
+  |> tangentialArcToRelative([-rBendExt, -rBendExt], %)
+
+  // Extrude
+  |> extrude(%, length = wKey)
+
+  // Create knob geometry.
+  // knobCenterPlane = offsetPlane("XZ", wKey / 2)
+  // knobSketch = startSketchOn(knobCenterPlane)
+  // |> startProfileAt([
+  // xKnobOffset - rPadBoss,
+  // tGap + tSection * 2
+  // ], %)
+  // |> yLine(3, %)
+  // |> tangentialArcToRelative([-rBendExt, rBendExt], %)
+  // |> xLine(-(rPad - rPadBoss - (2 * rBendExt)), %)
+  // |> tangentialArcToRelative([-rBendExt, rBendExt], %)
+  // |> yLine(1, %)
+  // |> tangentialArcToRelative([rBendExt, rBendExt], %)
+  // |> xLine(rPad - (rBendExt * 2), %)
+  // |> yLine(-(3 + 1 + rBendExt * 3), %, $revolveAxis)
+  // |> close(%)
+
+// Alternate knob geometry.
+sketchPadBoss = startSketchOn(keyBody, seg01)
+  |> circle(
+       %,
+       center = [-xKnobOffset, wKey / 2],
+       radius = rPadBoss,
+       tag = $padBoss,
+     )
+  |> extrude(%, length = 2)
+sketchPad = startSketchOn(sketchPadBoss, 'END')
+  |> circle(
+       %,
+       center = [-xKnobOffset, wKey / 2],
+       radius = rPad,
+       tag = $padBottom,
+     )
+  |> extrude(%, length = 3)
+  |> fillet(
+       radius = 0.5,
+       tags = [
+         padBoss,
+         padBottom,
+         getOppositeEdge(padBottom)
+       ],
+     )
+
+// Holes for contacts.
+tappedHoleUpperContact = startSketchOn(keyBody, seg01)
+  |> circle(%, center = [-xContactCenter, wKey / 2], radius = dTapDrillM4 / 2)
+  |> extrude(%, length = -tSection)
+
+// Lower hole we will countersink manually.
+tappedHoleLowerContact = startSketchOn(keyBody, seg02)
+  |> circle(%, center = [xContactCenter, wKey / 2], radius = dTapDrillM4 / 2)
+  |> extrude(%, length = -tLowerSection)
+
+// Mounting lugs.
+wLug = 8
+tLug = 2
+xLugOffset = 10
+
+// Function to create a lug sketch at specified position and direction.
+fn createLug(xPos, yPos, ySign) {
+  lugBody = startSketchOn(XY)
+    |> startProfileAt([xPos, yPos + ySign * wLug], %)
+    |> xLine(%, length = wLug / 2 - rBendExt)
+    |> tangentialArcToRelative([rBendExt, ySign * -rBendExt], %)
+    |> yLine(%, length = ySign * (-wLug + rBendExt * 2))
+    |> tangentialArcToRelative([rBendExt, ySign * -rBendExt], %)
+    |> xLine(%, length = -wLug - (2 * rBendExt))
+    |> arc({
+         angleStart = ySign * -90,
+         angleEnd = 0,
+         radius = rBendExt
+       }, %)
+    |> yLine(%, length = -ySign * (-wLug + rBendExt * 2))
+    |> tangentialArcToRelative([rBendExt, ySign * rBendExt], %)
+    |> close()
+    |> hole(circle(%, center = [xPos, yPos + ySign * wLug / 2], radius = dClearanceM4 / 2), %)
+    |> extrude(%, length = tLug)
+  return lugBody
+}
+
+// Create lugs.
+createLug(xLugOffset, 0, 1)
+createLug(lCantilever + xLugOffset, 0, 1)
+createLug(xLugOffset, -wKey, -1)
+createLug(lCantilever + xLugOffset, -wKey, -1)

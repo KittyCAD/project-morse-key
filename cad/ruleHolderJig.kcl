@@ -1,0 +1,71 @@
+// Set out some parameters.
+lPocketInternal = 176
+lArmExternal = 50
+tWall = 5
+hBase = 18
+
+// Sketch wrap around for scales.
+baseSketch = startSketchOn(XY)
+baseProfile = startProfileAt([-lPocketInternal / 2 - tWall, 0], baseSketch)
+  |> yLine(length = -lArmExternal)
+  |> xLine(length = tWall)
+  |> yLine(length = lArmExternal - tWall)
+  |> xLine(length = lPocketInternal)
+  |> yLine(length = -lArmExternal + tWall)
+  |> xLine(length = tWall)
+  |> yLine(length = lArmExternal)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+baseBody = extrude(baseProfile, length = hBase)
+
+// Pocket for ruler.
+tBlock = 7
+xRuler0 = 13 // Distance from rule edge to 0.
+xOffset = 20
+wRulerPocket = 36
+wGaugeBlock = 40
+tGaugeWall = (wGaugeBlock - wRulerPocket) / 2
+tStrap = 1.5
+
+gaugeSketch = startSketchOn(XY)
+gaugeBaseProfile = startProfileAt([xOffset, 0], gaugeSketch)
+  |> yLine(length = tBlock)
+  |> xLine(length = wGaugeBlock)
+  |> yLine(length = -tBlock)
+  |> close()
+  |> extrude(%, length = hBase - xRuler0)
+
+sketch001 = startSketchOn(gaugeBaseProfile, 'END')
+profile001 = startProfileAt([xOffset, 0], sketch001)
+  |> yLine(length = tBlock)
+  |> xLine(length = wGaugeBlock)
+  |> yLine(length = -tBlock)
+  |> xLine(length = -tGaugeWall)
+  |> yLine(length = tBlock - tGaugeWall)
+  |> xLine(length = -wRulerPocket)
+  |> yLine(length = -(tBlock - tGaugeWall), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(%, length = 80)
+
+  
+sketchStrap = startSketchOn(profile001, 'END')
+profile002 = startProfileAt([xOffset, 0], sketchStrap)
+  |> yLine(length = tBlock)
+  |> xLine(length = wGaugeBlock)
+  |> yLine(length = -tBlock)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+sketchStrapHole = startSketchOn(profile001, 'END')
+profile003 = startProfileAt([xOffset + tGaugeWall, tStrap], sketchStrapHole)
+  |> yLine(length = tBlock - tStrap - tGaugeWall)
+  |> xLine(length = wRulerPocket)
+  |> yLine(length = -tBlock + tStrap + tGaugeWall)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+strap = hole(profile003, profile002)
+extrude(strap, length=4)
+
+

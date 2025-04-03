@@ -1,0 +1,91 @@
+﻿# clang-format configuration (based on Ingmar Delsink's style)
+# Modified to ensure array initialization entries and function parameters appear on separate lines
+
+# General settings
+TabWidth: 4
+IndentWidth: 4
+UseTab: Never
+ColumnLimit: 80
+MaxEmptyLinesToKeep: 2
+
+# Language settings
+Language: Cpp
+Standard: Cpp11
+
+# Alignment settings
+AlignAfterOpenBracket: AlwaysBreak  # Changed from Align to AlwaysBreak to force parameters on new lines
+AlignConsecutiveAssignments: true
+AlignEscapedNewlinesLeft: true
+AlignOperands: false
+AlignTrailingComments: true
+
+# Array formatting (key changes for Morse table formatting)
+AlignArrayOfStructures: Left
+BinPackArguments: false
+BinPackParameters: false
+Cpp11BracedListStyle: false
+
+# Braces and blocks settings
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+
+# Constructor and parameter settings
+AllowAllParametersOfDeclarationOnNextLine: false
+BreakConstructorInitializersBeforeComma: true  # Changed to true to ensure initializers are properly broken
+ConstructorInitializerAllOnOneLineOrOnePerLine: true  # Changed to true to ensure one initializer per line
+ConstructorInitializerIndentWidth: 4  # Changed from 0 to 4 to align with indentation
+ContinuationIndentWidth: 4  # Changed from 0 to 4 to provide better readability
+
+# Pointer settings
+PointerAlignment: Left
+DerivePointerBinding: false
+
+# Spacing settings
+SpaceAfterCStyleCast: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: Always
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Penalties
+PenaltyBreakBeforeFirstCallParameter: 1  # Changed from 100 to 1 to encourage parameter breaking
+PenaltyBreakComment: 100
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakString: 100
+PenaltyExcessCharacter: 1
+PenaltyReturnTypeOnItsOwnLine: 20
+
+# Additional important settings for array formatting
+BreakArrays: true                  # Force each array element on its own line
+BreakBeforeBinaryOperators: false
+BreakBeforeTernaryOperators: false
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: true  # Changed to true for consistent template formatting
+
+# Indentation
+IndentCaseLabels: false
+IndentFunctionDeclarationAfterType: false
+NamespaceIndentation: None
+
+# Objective-C settings
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: true
+
+# Comment formatting
+CommentPragmas: ''
+
+# Force single line array initializations to break into multiple lines
+InsertTrailingCommas: None
+PackConstructorInitializers: Never
+
+# Additional parameter for more consistent formatting
+ExperimentalAutoDetectBinPacking: false

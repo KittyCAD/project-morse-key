@@ -1,0 +1,35 @@
+"Constants: CalcPad"
+"-----"
+lKnob = 44mm
+lSpring = 15mm
+kSpring = 0.93N/mm
+xSpringPreload = 1mm
+
+"Apparent stiffness at knob."
+rMechanicalAdvantage = lKnob/lSpring
+kInstalled = kSpring/rMechanicalAdvantage^2
+
+"Force at knob required to overcome preload."
+FPreload = kSpring*xSpringPreload|N
+FPreloadKnob = FPreload/rMechanicalAdvantage
+
+"Sanity check motion ratio/mechanical advantage."
+theta = 5deg|rad
+xKnob = lKnob*sin(theta)
+xSpring = lSpring*sin(theta)
+rMotion = xKnob/xSpring
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
