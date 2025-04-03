@@ -12,11 +12,10 @@ project includes:
 
 ```
 .
-├── analysis/       # Python analysis scripts
-├── arduino/        # PlatformIO project for firmware
-├── cad/            # KCL CAD files
-├── docs/           # Assembly instructions
-└── reporting/      # LaTeX documentation
+├── analysis/          # Python analysis scripts
+├── arduino-morse-key/ # PlatformIO project for firmware
+├── cad/               # KCL CAD files
+└── reporting/         # LaTeX documentation
 ```
 
 ## Prerequisites
